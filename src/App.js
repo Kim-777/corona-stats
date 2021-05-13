@@ -9,11 +9,17 @@ import {
   basisUrl,
 } from './utils/utils';
 import LineGraph from './components/LineGraph';
+import "leaflet/dist/leaflet.css";
+
+
+
 function App() {
     const [countries, setCountries] = useState([]);
     const [country, setCountry] = useState("All");
     const [countryInfo, setCountryInfo] = useState({});
     const [tableData, setTableData] = useState([]);
+    const [mapCenter, setMapCenter] = useState([34.80746,- 40.4796]);
+    const [mapZoom, setMapZoom] = useState(3);
 
     useEffect(() => {
       fetch(`${basisUrl}all`)
@@ -45,7 +51,8 @@ function App() {
 
     useEffect(() => {
       console.log('countryInfo >>>>>>', countryInfo)
-    }, [countryInfo]);
+      console.log('mapCenter >>>>>>>>>>>>>', mapCenter)
+    }, [countryInfo, mapCenter]);
 
     const onCountryChange = async (event) => {
         const countryCode = event.target.value;
@@ -57,7 +64,10 @@ function App() {
         await fetch(url)
           .then(response => response.json())
           .then(data => {
+            console.log('data >>>>>>>>', data);
             setCountryInfo(data);
+            setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+            setMapZoom(4);
           });
 
 
@@ -109,9 +119,10 @@ function App() {
                     />
                 </div>
 
-
-                {/* Map */}
-                <Map />
+                <Map 
+                  center={mapCenter}
+                  zoom={mapZoom}
+                />
             </div>
             <Card className="app__right">
               <CardContent>
